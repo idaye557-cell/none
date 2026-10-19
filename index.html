@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#d8e7f3">
+<title>Daydream Phone — 가상 휴대폰</title>
+<style>
+:root{--ink:#17212e;--muted:#718096;--glass:rgba(255,255,255,.72);--line:rgba(255,255,255,.68);--blue:#3977bd}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+body{background:radial-gradient(ellipse at 15% 15%,#f8dce8 0,transparent 35%),radial-gradient(ellipse at 85% 80%,#a9c9e8 0,transparent 40%),linear-gradient(135deg,#d7e7f3,#f5f7fa 55%,#c5d8ed);display:flex;align-items:center;justify-content:center;padding:18px;min-height:100dvh}
+.wrap{width:min(100%,410px);display:flex;flex-direction:column;align-items:center;gap:12px}
+.caption{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#526579;font-weight:700}
+.phone{width:100%;aspect-ratio: .485;max-height:min(84dvh,850px);min-height:620px;border:7px solid #20252d;border-radius:48px;background:#d9e9f6;box-shadow:0 28px 70px #243b5840,inset 0 0 0 2px #7c8791;position:relative;overflow:hidden}
+.screen{position:absolute;inset:0;border-radius:39px;overflow:hidden;background:linear-gradient(150deg,#77b4e4 0%,#d7eaf6 38%,#6e9ac8 70%,#142d58 100%)}
+.wallpaper{position:absolute;inset:0;overflow:hidden;background:radial-gradient(ellipse at 12% 20%,#e3f7ff 0,transparent 22%),linear-gradient(135deg,#8fc9f0,#19518b 58%,#10264b)}
+.wallpaper:before{content:"";position:absolute;width:135%;height:75%;left:-25%;top:36%;border-radius:50%;transform:rotate(-30deg);background:linear-gradient(130deg,#e7f5fa,#8cc6e9 32%,#2b6ca5 60%,#153866);box-shadow:inset -10px -18px 35px #08264d66}
+.wallpaper:after{content:"";position:absolute;width:95%;height:54%;right:-25%;top:7%;border-radius:50%;transform:rotate(35deg);background:linear-gradient(120deg,#1c4d80,#0d2b56 65%,#7ebbe7);box-shadow:inset 7px 7px 22px #9cd8ff55}
+.status{position:absolute;z-index:4;top:14px;left:22px;right:22px;display:flex;justify-content:space-between;align-items:center;color:white;font-size:12px;font-weight:700;text-shadow:0 1px 3px #1235}
+.statusright{display:flex;gap:5px;align-items:center}.pill{position:absolute;z-index:5;top:10px;left:50%;transform:translateX(-50%);width:102px;height:27px;border-radius:20px;background:#050608}
+.view{position:absolute;inset:0;z-index:2;display:none;color:white}.view.active{display:block}
+.lockdate{position:absolute;top:15%;width:100%;text-align:center;font-size:18px;font-weight:600;text-shadow:0 2px 8px #1235}
+.lockclock{position:absolute;top:18%;width:100%;text-align:center;font-size:clamp(64px,17vw,92px);letter-spacing:-4px;font-weight:300;line-height:1.05;text-shadow:0 3px 12px #1234}
+.lockbottom{position:absolute;bottom:7%;width:100%;text-align:center;font-size:13px;color:#fffddc;text-shadow:0 1px 5px #1238}
+.lockcontrols{position:absolute;bottom:13%;left:13%;right:13%;display:flex;justify-content:space-between}
+.round{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:#223c586b;backdrop-filter:blur(12px);border:1px solid #ffffff38;font-size:20px}
+.unlock{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);height:4px;width:105px;border-radius:5px;background:white;opacity:.95}
+.homecontent{position:absolute;inset:75px 17px 70px;display:flex;flex-direction:column;z-index:2}
+.widget{border:1px solid #ffffff5e;background:#ffffff2a;backdrop-filter:blur(12px);border-radius:22px;padding:13px 15px;margin-bottom:20px;text-shadow:0 1px 4px #1234}
+.widget small{display:block;font-size:11px;opacity:.88}.widget strong{display:block;font-size:24px;margin:3px 0}.widget span{font-size:12px}
+.apps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px 8px;align-content:start}
+.appicon{border:0;background:transparent;color:white;display:flex;align-items:center;flex-direction:column;gap:6px;font-size:10px;text-shadow:0 1px 4px #1238;padding:0;cursor:pointer;min-width:0}
+.iconbox{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;font-size:25px;color:white;box-shadow:0 5px 12px #1233,inset 0 1px 1px #fff8}
+.photos{background:conic-gradient(#fa5a69,#ffbd36,#79cf77,#4bc9dd,#7c83f8,#d46be9,#fa5a69)}
+.messages{background:linear-gradient(#42df69,#17b846)}.notes{background:linear-gradient(#fff5c5 0 24%,#fff 24%);color:#d2a52e}.calendar{background:#fff;color:#e95151;font-size:11px;font-weight:800}.calendar b{font-size:23px;color:#252a31}.phoneicon{background:linear-gradient(#54e56c,#19a84a)}.social{background:linear-gradient(135deg,#7849d8,#f44c8d,#ffb64a)}.browser{background:linear-gradient(#c9f2ff,#4e9ad8);color:#2677bd}.dock{position:absolute;z-index:3;bottom:24px;left:15px;right:15px;height:65px;border-radius:22px;background:#ffffff58;border:1px solid #ffffff6a;backdrop-filter:blur(18px);display:flex;justify-content:space-evenly;align-items:center}
+.dock .iconbox{width:43px;height:43px;border-radius:13px}
+.appview{background:#f5f6fa;color:#202634;z-index:6;border-radius:39px;overflow:hidden}
+.apphead{height:88px;padding:45px 17px 10px;display:flex;align-items:end;justify-content:space-between;background:#f5f6fa;position:relative;z-index:2}
+.apphead h2{font-size:22px;margin:0;font-weight:750;letter-spacing:-.5px}.back{border:0;background:#e7edf5;color:#3977bd;border-radius:18px;padding:8px 12px;font-size:13px;cursor:pointer}
+.appbody{height:calc(100% - 88px);overflow:auto;padding:15px 15px 30px}.appbody::-webkit-scrollbar{display:none}
+.sectionlabel{font-size:12px;color:#758093;font-weight:700;margin:8px 4px 10px;text-transform:uppercase;letter-spacing:.04em}
+.card{background:white;border-radius:17px;padding:14px;margin-bottom:10px;box-shadow:0 2px 9px #192b430b}
+.row{display:flex;align-items:center;gap:11px}.grow{flex:1;min-width:0}.muted{color:#8993a3;font-size:12px}.tiny{font-size:11px;color:#8c95a5}.avatar{width:39px;height:39px;flex:none;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffd4df,#a8cafa);font-size:19px}.bold{font-weight:700}.divider{height:1px;background:#edf0f4;margin:12px 0}
+.photoGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.photo{aspect-ratio:1;border-radius:9px;display:flex;align-items:end;padding:7px;color:white;font-size:10px;font-weight:600;background:linear-gradient(145deg,#e9b3c8,#6e99c4)}.photo:nth-child(2){background:linear-gradient(145deg,#f8d8a1,#e27b70)}.photo:nth-child(3){background:linear-gradient(145deg,#b4d8d0,#4c8e92)}.photo:nth-child(4){background:linear-gradient(145deg,#9fc8f4,#374d7c)}.photo:nth-child(5){background:linear-gradient(145deg,#e7d4f7,#a27bc8)}.photo:nth-child(6){background:linear-gradient(145deg,#ffd4a4,#c76f48)}
+.bubble{max-width:83%;padding:10px 12px;border-radius:17px;font-size:13px;line-height:1.45;margin:8px 0}.bubble.them{background:#e8ebf1;border-bottom-left-radius:5px}.bubble.me{background:#3986ee;color:white;border-bottom-right-radius:5px;margin-left:auto}.chatname{font-size:12px;color:#8a93a2;margin:3px 5px}.inputrow{display:flex;gap:7px;margin-top:12px}.inputrow input{width:100%;min-width:0;border:1px solid #e2e6ed;border-radius:18px;padding:10px 12px;font-size:13px;background:white}.send{border:0;background:#3986ee;color:white;border-radius:16px;padding:0 13px;font-weight:700}
+.noteitem{border-left:4px solid #f3d56d}.noteitem h3{font-size:15px;margin:0 0 7px}.noteitem p{font-size:12px;line-height:1.6;margin:0;color:#5d6879;white-space:pre-wrap}
+.callitem{padding:12px 0;display:flex;gap:10px;align-items:center}.callstatus{font-size:11px;color:#4baf77}.datebox{border-radius:9px;background:#fff0f0;color:#e45656;text-align:center;width:43px;padding:6px 0;flex:none;font-size:10px}.datebox b{display:block;font-size:19px}.event{border-left:3px solid #6da8e8;padding:9px 10px;margin:8px 0;background:#fff;border-radius:0 10px 10px 0;font-size:12px}.event.pink{border-color:#e58eae}.event.green{border-color:#7abf9a}
+.post{padding:0;overflow:hidden}.posttop{padding:12px;display:flex;align-items:center;gap:9px}.postart{height:190px;display:grid;place-items:center;font-size:58px;background:linear-gradient(145deg,#e8b8cb,#8eb7d5)}.post:nth-of-type(2) .postart{background:linear-gradient(145deg,#f4d7a5,#e68f76)}.posttext{padding:12px;font-size:12px;line-height:1.5}.like{border:0;background:#f7e9ef;color:#d74f80;border-radius:20px;padding:7px 10px;cursor:pointer}
+.searchbar{padding:10px 12px;background:#e8ebf0;border-radius:12px;color:#8993a3;font-size:12px;margin-bottom:12px}.webresult{background:white;border-radius:15px;padding:13px;margin-bottom:9px}.webresult h3{font-size:14px;color:#3977bd;margin:0 0 5px}.webresult p{font-size:12px;color:#667285;line-height:1.5;margin:0}
+.toast{position:absolute;z-index:10;left:50%;bottom:54px;transform:translate(-50%,20px);opacity:0;transition:.2s;background:#17212e;color:white;padding:9px 14px;border-radius:20px;font-size:12px;white-space:nowrap;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:420px){body{padding:0;background:#d7e7f3}.wrap{width:100%;gap:0}.caption{display:none}.phone{border:0;border-radius:0;width:100%;height:100dvh;min-height:560px;max-height:none;aspect-ratio:auto;box-shadow:none}.screen{border-radius:0}.appview{border-radius:0}.status{top:max(14px,env(safe-area-inset-top))}.pill{top:max(10px,env(safe-area-inset-top))}.homecontent{top:85px}.lockdate{top:17%}.lockclock{top:20%}}
+@media(min-width:421px){.phone{height:min(82dvh,850px);min-height:620px;width:auto;aspect-ratio: .485}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="caption">DAYDREAM PHONE · FICTIONAL LIFE SIMULATOR</div>
+<div class="phone">
+ <div class="screen">
+  <div class="wallpaper"></div>
+  <div class="status"><span id="statusTime">00:06</span><span class="statusright"><span>▮▮▮</span><span>5G</span><span>▰</span></span></div>
+  <div class="pill"></div>
+  <section class="view active" id="lock">
+   <div class="lockdate" id="lockDate">10월 20일 화요일</div><div class="lockclock" id="lockClock">00:06</div>
+   <div class="lockcontrols"><div class="round">⌁</div><div class="round">◉</div></div>
+   <div class="lockbottom">위로 밀어서 열기</div><div class="unlock"></div>
+  </section>
+  <section class="view" id="home">
+   <div class="homecontent">
+    <div class="widget"><small id="widgetDate">10월 20일 화요일</small><strong id="widgetClock">00:06</strong><span>수요일엔 조금 더 천천히 ☁️</span></div>
+    <div class="apps" id="appGrid"></div>
+   </div>
+   <div class="dock" id="dock"></div><div class="unlock"></div>
+  </section>
+  <section class="view appview" id="appView">
+   <div class="apphead"><button class="back" id="backHome">‹ 홈</button><h2 id="appTitle">사진</h2><span style="width:42px"></span></div>
+   <div class="appbody" id="appBody"></div>
+  </section>
+  <div class="toast" id="toast"></div>
+ </div>
+</div>
+<div style="font-size:11px;color:#526579;text-align:center;max-width:330px;line-height:1.5">가상의 인물 ‘서윤’의 휴대폰이에요. 화면을 위로 밀거나 앱 아이콘을 눌러 둘러보세요.</div>
+</div>
+<script>
+const apps=[
+ {id:'photos',name:'사진',emoji:'🌈',cls:'photos'},
+ {id:'calendar',name:'캘린더',emoji:'📅',cls:'calendar'},
+ {id:'messages',name:'메시지',emoji:'●',cls:'messages'},
+ {id:'notes',name:'메모',emoji:'📝',cls:'notes'},
+ {id:'calls',name:'통화 기록',emoji:'☎',cls:'phoneicon'},
+ {id:'social',name:'SNS',emoji:'◎',cls:'social'},
+ {id:'browser',name:'Safari',emoji:'◉',cls:'browser'}
+];
+const $=id=>document.getElementById(id);
+const date=new Date();
+const days=['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];
+function time(){let d=new Date();return d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',hour12:false})}
+function dateText(){let d=new Date();return `${d.getMonth()+1}월 ${d.getDate()}일 ${days[d.getDay()]}`}
+function updateClock(){let t=time();$('statusTime').textContent=t;$('lockClock').textContent=t;$('widgetClock').textContent=t;$('lockDate').textContent=dateText();$('widgetDate').textContent=dateText()}
+updateClock();setInterval(updateClock,15000);
+function renderIcon(a){let inside=a.id==='calendar'?`<span style="text-align:center;line-height:1.05">화요일<br><b>${date.getDate()}</b></span>`:a.id==='photos'?'🌈':a.id==='messages'?'●':a.id==='notes'?'▤':a.id==='calls'?'☎':a.id==='social'?'◎':'◉';return `<button class="appicon" data-app="${a.id}"><span class="iconbox ${a.cls}">${inside}</span><span>${a.name}</span></button>`}
+$('appGrid').innerHTML=apps.map(renderIcon).join('');
+$('dock').innerHTML=['calls','messages','browser','notes'].map(id=>renderIcon(apps.find(a=>a.id===id))).join('');
+let current='lock';
+function show(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));$(id).classList.add('active');current=id}
+function home(){show('home')}
+function toast(msg){$('toast').textContent=msg;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
+function openApp(id){const a=apps.find(x=>x.id===id);if(!a)return;$('appTitle').textContent=a.name;$('appBody').innerHTML=content(id);show('appView');$('appBody').scrollTop=0}
+document.addEventListener('click',e=>{let b=e.target.closest('[data-app]');if(b)openApp(b.dataset.app)});
+$('backHome').onclick=home;
+let touchY=0;
+$('lock').addEventListener('touchstart',e=>touchY=e.touches[0].clientY,{passive:true});
+$('lock').addEventListener('touchend',e=>{if(touchY-e.changedTouches[0].clientY>30)home()},{passive:true});
+$('lock').addEventListener('click',e=>{if(e.target.closest('.round')){toast('아직 잠금 화면이에요');return}home()});
+let notes=[{title:'오늘 할 일',text:'□ 영어 단어 외우기\\n□ 엄마한테 전화하기\\n☑ 사진 정리하기'},{title:'카페에서',text:'창가 자리가 좋았다. 비 오는 날에 다시 오기 ☕'},{title:'영화 메모',text:'푸른색 조명, 느린 카메라 움직임. 이 장면은 꼭 기억해두자.'}];
+let liked={};
+function content(id){
+if(id==='photos')return `<div class="sectionlabel">최근 항목 · 6장</div><div class="photoGrid">${['한강 산책','오늘의 디저트','초록 식물','저녁 하늘','책상 위','노을 기록'].map((x,i)=>`<div class="photo" data-photo="${i}">${x}</div>`).join('')}</div><div class="card" style="margin-top:15px"><b>추억</b><p class="muted">지난달 이맘때 · 동네 산책</p><div style="font-size:12px;color:#667285">서윤의 평범하고 다정한 하루를 모아둔 사진첩.</div></div>`;
+if(id==='messages')return `<div class="sectionlabel">메시지 · 가상 대화</div><div class="card"><div class="row"><div class="avatar">🐰</div><div class="grow"><b>지민</b><div class="muted">오늘도 수고했어 🌙</div></div><span class="tiny">22:41</span></div><div class="divider"></div><div id="chat"><div class="chatname">지민</div><div class="bubble them">내일 카페 갈래? 새로 생긴 곳 봤어!</div><div class="bubble me">좋아 ☕ 몇 시에 만날까?</div><div class="bubble them">오후 2시 어때? 창가 자리 예약은 안 된대 ㅋㅋ</div><div class="bubble me">완전 좋아. 책도 가져갈게 📚</div></div><div class="inputrow"><input id="msgInput" placeholder="메시지 보내기..." maxlength="120"><button class="send" id="sendMsg">전송</button></div></div><p class="tiny">※ 직접 입력한 내용은 이 화면 안에서만 표시돼요.</p>`;
+if(id==='notes')return `<div class="sectionlabel">나의 메모 · ${notes.length}개</div><div id="notesList">${notes.map((n,i)=>`<div class="card noteitem"><h3>${n.title}</h3><p>${n.text}</p></div>`).join('')}</div><div class="card"><input id="noteTitle" placeholder="메모 제목" style="width:100%;border:1px solid #e2e6ed;border-radius:10px;padding:10px;margin-bottom:8px"><textarea id="noteText" placeholder="새로운 메모..." style="width:100%;height:75px;resize:vertical;border:1px solid #e2e6ed;border-radius:10px;padding:10px;font:inherit;font-size:12px"></textarea><button class="send" style="padding:10px 14px;margin-top:8px" id="addNote">메모 추가</button></div>`;
+if(id==='calls')return `<div class="sectionlabel">최근 통화</div><div class="card">${[['지민','📱','오늘, 오후 10:14','수신 통화'],['엄마','📱','오늘, 오후 7:32','발신 통화'],['민서','📵','어제, 오후 5:06','부재중 전화'],['지민','📱','어제, 오후 1:21','수신 통화'],['택배 기사님','📱','월요일, 오전 11:03','수신 통화']].map((c,i)=>`<div class="callitem"><div class="avatar">${c[1]}</div><div class="grow"><b>${c[0]}</b><div class="muted">${c[2]}</div></div><div style="text-align:right"><div class="${i===2?'':'callstatus'}">${c[3]}</div><div class="tiny">ⓘ</div></div></div>${i<4?'<div class="divider"></div>':''}`).join('')}</div><p class="tiny">모든 통화 기록은 이야기용으로 만든 가상 데이터예요.</p>`;
+if(id==='calendar')return `<div class="sectionlabel">${date.getFullYear()}년 ${date.getMonth()+1}월</div><div class="card"><div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:8px;font-size:11px;color:#8993a3;margin-bottom:12px">${['일','월','화','수','목','금','토'].map(x=>`<span>${x}</span>`).join('')}</div><div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:8px">${Array.from({length:35},(_,i)=>{let n=i-date.getDay()+1;let valid=n>0&&n<=new Date(date.getFullYear(),date.getMonth()+1,0).getDate();return `<span style="padding:6px 0;border-radius:50%;font-size:12px;${n===date.getDate()?'background:#3986ee;color:white;font-weight:700;':''}${!valid?'opacity:.2':''}">${valid?n:''}</span>`}).join('')}</div></div><div class="sectionlabel">다가오는 일정</div><div class="card"><div class="event"><b>14:00 · 지민이와 카페</b><div class="muted">오랜만에 수다 떨기 ☕</div></div><div class="event pink"><b>18:30 · 저녁 먹기</b><div class="muted">집에서 파스타 만들기</div></div><div class="event green"><b>20:00 · 영화 보기</b><div class="muted">찜해둔 영화 한 편 🎬</div></div></div>`;
+if(id==='social')return `<div class="sectionlabel">seoyun.day · 게시물 2개</div><div class="card post"><div class="posttop"><div class="avatar">🌷</div><div class="grow"><b>seoyun.day</b><div class="tiny">동네 카페</div></div><span>•••</span></div><div class="postart">☕📚</div><div class="posttext"><button class="like" data-like="1">${liked[1]?'♥':'♡'} 좋아요 ${liked[1]?'13':'12'}</button><p><b>seoyun.day</b> 오늘은 좋아하는 책이랑 커피. 이런 시간이 필요했어 ☁️</p><span class="tiny">2시간 전 · 댓글 3개</span></div></div><div class="card post"><div class="posttop"><div class="avatar">🌷</div><div class="grow"><b>seoyun.day</b><div class="tiny">저녁 산책</div></div><span>•••</span></div><div class="postart">🌇</div><div class="posttext"><button class="like" data-like="2">${liked[2]?'♥':'♡'} 좋아요 ${liked[2]?'29':'28'}</button><p><b>seoyun.day</b> 집에 가는 길 하늘이 예뻐서 잠깐 멈췄다.</p><span class="tiny">어제 · 댓글 5개</span></div></div>`;
+if(id==='browser')return `<div class="searchbar">⌕　서윤의 북마크와 검색 기록</div><div class="sectionlabel">즐겨찾기</div>${[['오늘의 날씨','내일은 맑음, 낮 기온 19° ☀️'],['동네 카페 추천','조용하고 햇살이 잘 드는 카페 리스트'],['영화 기록장','이번 달 보고 싶은 영화 5편'],['레시피 노트','주말에 만들어 볼 바질 파스타']].map(x=>`<div class="webresult"><h3>${x[0]} ↗</h3><p>${x[1]}</p></div>`).join('')}<div class="sectionlabel">최근 검색</div><div class="card" style="font-size:12px;line-height:2">• 비 오는 날 듣기 좋은 음악<br>• 필름 카메라 느낌 보정<br>• 늦게까지 하는 조용한 카페</div>`;
+return '';
+}
+document.addEventListener('click',e=>{
+if(e.target.id==='sendMsg'){let input=$('msgInput');if(input&&input.value.trim()){let chat=$('chat');chat.insertAdjacentHTML('beforeend',`<div class="bubble me"></div>`);chat.lastElementChild.textContent=input.value.trim();input.value='';$('appBody').scrollTop=$('appBody').scrollHeight}else toast('메시지를 먼저 입력해 주세요')}
+if(e.target.id==='addNote'){let title=$('noteTitle'),text=$('noteText');if(title&&text&&title.value.trim()&&text.value.trim()){notes.unshift({title:title.value.trim(),text:text.value.trim()});$('appBody').innerHTML=content('notes');toast('메모를 추가했어요')}else toast('제목과 내용을 입력해 주세요')}
+let like=e.target.closest('[data-like]');if(like){let n=like.dataset.like;liked[n]=!liked[n];let body=$('appBody');let y=body.scrollTop;body.innerHTML=content('social');body.scrollTop=y}
+let photo=e.target.closest('[data-photo]');if(photo)toast(photo.textContent+' · 가상 사진');
+});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='msgInput')$('sendMsg')?.click()});
+let startY=0;
+$('home').addEventListener('touchstart',e=>startY=e.touches[0].clientY,{passive:true});
+$('home').addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-startY>80)show('lock')},{passive:true});
+</script>
+</body>
+</html>
